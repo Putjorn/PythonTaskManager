@@ -1,13 +1,104 @@
 import json
+from datetime import datetime
 
-""" data = {
-    "id":"1",
+""" data1 = {
+    "id":"2",
     "name":"Aof",
     "description":"Design product",
     "due_date":"2026-7-7",
-    "isCompleted":False
+    "isCompleted": False
 } """
+class Filemanager:
+    def __init__(self):
+        self.newData = []
 
+    def loadFile():
+        try:
+            with open("data.json") as file:
+                loadData = json.load(file)
+                if isinstance(loadData,list):
+                    newData = loadData
+                    return newData
+                else:
+                    newData = [loadData]
+                    return newData
+        except Exception as e:
+            print(f"{e}")
+        finally:
+            newData = []
+            return newData
+
+        """ with open("data.json") as file:
+            loadData = json.load(file)
+            if isinstance(loadData,list):
+                newData = loadData
+                return newData
+            else:
+                newData = [loadData]
+                return newData """
+
+    def saveFile(data):
+        with open("data.json","w") as file:
+            saveData = json.dump(data, file, indent=4)
+            print(f"Already save {saveData}")
+    
+
+class Taskmanager:
+    def __init__(self):
+        self.showData = Filemanager.loadFile()
+        
+
+    def addTask(self, name, description, due_date):
+        #showData = Filemanager.loadFile()
+        #Find len of showData
+        task_id = len(self.showData) + 1
+        for item in self.showData:                              #If newid = oldid need to change newid
+            if item["id"] == task_id:
+                lastID = self.showData[len(self.showData) - 1]
+                task_id = lastID["id"] + 1
+
+        task_name = name
+        description = description
+        due_date = due_date
+        new_dict = {
+            "id": str(task_id),
+            "name": task_name,
+            "description": description,
+            "due_date": due_date,
+            "isCompleted": False
+        }
+        #new_dict append to json file
+        self.showData.append(new_dict)
+        Filemanager.saveFile(self.showData)
+
+
+    def showTask(self):
+        #self.showData = Filemanager.loadFile()
+        print(f"In process task ")
+        print("---------------------------------------------------------------------------------------------")
+        for item in self.showData:
+            if item["isCompleted"] is False:
+                print(f"Task_id : {item["id"]} , Task_name : {item["name"]} , Due_date : {item["due_date"]}")
+        print("\n" \
+        "\n" \
+        "---------------------------------------------------------------------------------------------")
+        print(f"Completed task ")
+        print("---------------------------------------------------------------------------------------------")
+        for item in self.showData:
+            if item["isCompleted"] is True:
+                print(f"Task_id : {item["id"]} , Task_name : {item["name"]} , Due_date : {item["due_date"]}")
+        print("\n" \
+        "\n" \
+        "---------------------------------------------------------------------------------------------")
+
+    def changeStatus():
+        pass
+
+    def deleteTask():
+        pass
+
+    def searchTask():
+        pass
 
 # Add task // User can add name,descript,due_date => id auto add
 # If command add task, declare new dict and json.dump and save in file Json
@@ -36,13 +127,15 @@ import json
 ### Do not name empty or date
 #อย่างน้อย 6 คอมมิตที่มีความหมายซึ่งสะท้อนถึงการเปลี่ยนแปลงหลักในโปรเจกต์ (เช่น การพัฒนาฟังก์ชันหลักของตัวจัดการงาน การเพิ่มฟังก์ชันการทำงานของ JSON การปรับปรุงอินเทอร์เฟซ CLI)
 
-""" with open("data.json","a") as file:
-    json.dump(data, file)
-
-with open("data.json") as file:
-    print(file.read()) """
+def checkDateFormat(due_date):
+    try:
+        datetime.strptime(due_date, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
 
 def main():
+    app = Taskmanager()
     while True:
         print("Please insert your command")
         print("--------------------------\n"
@@ -52,12 +145,29 @@ def main():
         "4. Delete task\n"
         "5. Search task\n"
         "6. Quit programs")
+        print("--------------------------\n")
         selected = input("Your command is ")
+        print("--------------------------\n")
 
         if selected == "1":
             print("1. Add task")
+            name = input("Name :  ")
+            description = input("Description :  ")
+            due_date = input("due_date format(YYYY-MM-DD):  ")
+            if not name:
+                print("Please put name")
+            elif not description:
+                print("Please put task")
+            elif not checkDateFormat(due_date):
+                print("Please put follow this format (YYYY-MM-DD)")
+            else:
+                app.addTask(name, description, due_date)
+
         elif selected == "2":
             print("2. Show task")
+            #showData = Filemanager.loadFile()
+            app.showTask()
+            #Filemanager.saveFile(data1)
         elif selected == "3":
             print("3. Change status task")
         elif selected == "4":
