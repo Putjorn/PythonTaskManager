@@ -28,15 +28,6 @@ class Filemanager:
             newData = []
             return newData
 
-        """ with open("data.json") as file:
-            loadData = json.load(file)
-            if isinstance(loadData,list):
-                newData = loadData
-                return newData
-            else:
-                newData = [loadData]
-                return newData """
-
     def saveFile(data):
         with open("data.json","w") as file:
             saveData = json.dump(data, file, indent=4)
@@ -91,13 +82,17 @@ class Taskmanager:
         "\n" \
         "---------------------------------------------------------------------------------------------")
 
-    def changeStatus():
+    def changeStatus(self, id):
+        task_id = id
+        for item in self.showData:
+            if item["id"] == task_id:
+                update = item["isCompleted"] = True
+                print(update)
+
+    def deleteTask(self):
         pass
 
-    def deleteTask():
-        pass
-
-    def searchTask():
+    def searchTask(self):
         pass
 
 # Add task // User can add name,descript,due_date => id auto add
@@ -170,6 +165,11 @@ def main():
             #Filemanager.saveFile(data1)
         elif selected == "3":
             print("3. Change status task")
+            id = input("task_id : ")
+            if not id:
+                print("Please insert task_id that you want to change to completed status")
+            else:
+                app.changeStatus(id)
         elif selected == "4":
             print("4. Delete task")
         elif selected == "5":
