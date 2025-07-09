@@ -9,12 +9,10 @@ from datetime import datetime
     "isCompleted": False
 } """
 class Filemanager:
-    def __init__(self):
-        self.newData = []
-
     def loadFile():
+        file_path = "data.json"
         try:
-            with open("data.json") as file:
+            with open(file_path) as file:
                 loadData = json.load(file)
                 if isinstance(loadData,list):
                     newData = loadData
@@ -22,11 +20,13 @@ class Filemanager:
                 else:
                     newData = [loadData]
                     return newData
+        except json.JSONDecodeError:
+            print(f"Error: File '{file_path}' is not a valid JSON format.")
+            return []
         except Exception as e:
-            print(f"{e}")
-        finally:
-            newData = []
-            return newData
+            print(f"An unexpected error occurred: {e}")
+            return []
+
 
     def saveFile(data):
         with open("data.json","w") as file:
@@ -88,9 +88,16 @@ class Taskmanager:
             if item["id"] == task_id:
                 update = item["isCompleted"] = True
                 print(update)
+        Filemanager.saveFile(self.showData)
 
-    def deleteTask(self):
-        pass
+    def deleteTask(self, id):
+        task_id = id
+        for index, item in enumerate(self.showData):
+            if item["id"] == task_id:
+                print(f"delete_id : {item["id"]} , {self.showData[index]}")
+                del self.showData[index]
+                print(f"Read all data : {self.showData}")
+        Filemanager.saveFile(self.showData)
 
     def searchTask(self):
         pass
@@ -172,6 +179,11 @@ def main():
                 app.changeStatus(id)
         elif selected == "4":
             print("4. Delete task")
+            id = input("task_id : ")
+            if not id:
+                print("Please insert task_id that you want to delete")
+            else:
+                app.deleteTask(id)
         elif selected == "5":
             print("5. Search task")
         elif selected == "6":
