@@ -39,7 +39,7 @@ class Taskmanager:
         self.showData = Filemanager.loadFile()
         
 
-    def addTask(self, name, description, due_date):
+    def addTask(self, title, description, due_date):
         #showData = Filemanager.loadFile()
         #Find len of showData
         task_id = len(self.showData) + 1
@@ -48,12 +48,12 @@ class Taskmanager:
                 lastID = self.showData[len(self.showData) - 1]
                 task_id = lastID["id"] + 1
 
-        task_name = name
+        task_title = title
         description = description
         due_date = due_date
         new_dict = {
             "id": str(task_id),
-            "name": task_name,
+            "title": title,
             "description": description,
             "due_date": due_date,
             "isCompleted": False
@@ -65,21 +65,19 @@ class Taskmanager:
 
     def showTask(self):
         #self.showData = Filemanager.loadFile()
-        print(f"In process task ")
+        print(f"Pending")
         print("---------------------------------------------------------------------------------------------")
         for item in self.showData:
             if item["isCompleted"] is False:
-                print(f"Task_id : {item["id"]} , Task_name : {item["name"]} , Due_date : {item["due_date"]}")
+                print(f"Task_id : {item["id"]} , Task_title : {item["title"]} , Due_date : {item["due_date"]}")
         print("\n" \
-        "\n" \
         "---------------------------------------------------------------------------------------------")
-        print(f"Completed task ")
+        print(f"Completed")
         print("---------------------------------------------------------------------------------------------")
         for item in self.showData:
             if item["isCompleted"] is True:
-                print(f"Task_id : {item["id"]} , Task_name : {item["name"]} , Due_date : {item["due_date"]}")
+                print(f"Task_id : {item["id"]} , Task_title : {item["title"]} , Due_date : {item["due_date"]}")
         print("\n" \
-        "\n" \
         "---------------------------------------------------------------------------------------------")
 
     def changeStatus(self, id):
@@ -99,8 +97,31 @@ class Taskmanager:
                 print(f"Read all data : {self.showData}")
         Filemanager.saveFile(self.showData)
 
-    def searchTask(self):
-        pass
+    def searchTask(self,wordSearch,dateSearch):
+        #print(f"{wordSearch} , {dateSearch}")
+        checkWord = False
+        checkDate = False
+
+        for item in self.showData:
+            if wordSearch:
+                task_name = item.get("title").lower()
+                task_description = item.get("description").lower()
+
+                if wordSearch.lower() in task_name or wordSearch.lower() in task_description:
+                    checkWord = True
+                    print(f"Task_id : {item["id"]} , Task_title : {item["title"]} , Due_date : {item["due_date"]}")
+            
+            if dateSearch:
+                task_date = item.get("due_date")
+                if dateSearch in task_date:
+                    checkDate = True
+                    print(f"Task_id : {item["id"]} , Task_title : {item["title"]} , Due_date : {item["due_date"]}")
+        
+        if checkWord == False and checkDate == False:
+            print(f"--------------------------------")
+            print(f"Word your search was not found!!")
+
+
 
 # Add task // User can add name,descript,due_date => id auto add
 # If command add task, declare new dict and json.dump and save in file Json
@@ -139,31 +160,32 @@ def checkDateFormat(due_date):
 def main():
     app = Taskmanager()
     while True:
-        print("Please insert your command")
-        print("--------------------------\n"
-        "1. Add task\n"
-        "2. Show task\n"
+        #print("Please insert your command")
+        print("--------------------------------\n"
+        "1. Add new task\n"
+        "2. Show all tasks\n"
         "3. Change status task\n"
         "4. Delete task\n"
         "5. Search task\n"
         "6. Quit programs")
-        print("--------------------------\n")
+        print("--------------------------------\n")
+        print("Please insert your command")
         selected = input("Your command is ")
-        print("--------------------------\n")
+        print("--------------------------------\n")
 
         if selected == "1":
             print("1. Add task")
-            name = input("Name :  ")
+            title = input("Title :  ")
             description = input("Description :  ")
             due_date = input("due_date format(YYYY-MM-DD):  ")
-            if not name:
-                print("Please put name")
+            if not title:
+                print("Please put title")
             elif not description:
                 print("Please put task")
             elif not checkDateFormat(due_date):
                 print("Please put follow this format (YYYY-MM-DD)")
             else:
-                app.addTask(name, description, due_date)
+                app.addTask(title, description, due_date)
 
         elif selected == "2":
             print("2. Show task")
@@ -185,7 +207,11 @@ def main():
             else:
                 app.deleteTask(id)
         elif selected == "5":
-            print("5. Search task")
+            print("5. Search tasks")
+            wordSearch = input("word : ")
+            dateSearch = input("date (YYYY-MM-DD) : ")
+
+            app.searchTask(wordSearch,dateSearch)
         elif selected == "6":
             print("6. Quit programs")
             break
